@@ -1,0 +1,23 @@
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        rows, cols = len(board), len(board[0])
+        have = Counter(ch for row in board for ch in row)
+        if any(have[ch] < cnt for ch, cnt in Counter(word).items()):
+            return False
+        if have[word[0]] > have[word[-1]]:
+            word = word[::-1]
+        def dfs(r, c, i):
+            if i == len(word):
+                return True
+            if r < 0 or c < 0 or r >= rows or c >= cols or board[r][c] != word[i]:
+                return False
+            board[r][c] = "#"
+            found = (dfs(r + 1, c, i + 1) or dfs(r - 1, c, i + 1) or
+                     dfs(r, c + 1, i + 1) or dfs(r, c - 1, i + 1))
+            board[r][c] = word[i]
+            return found
+        for r in range(rows):
+            for c in range(cols):
+                if dfs(r, c, 0):
+                    return True
+        return False
